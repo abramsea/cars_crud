@@ -77,7 +77,7 @@
     .footer {
       width: 100%;
       margin: 0 auto;
-      position: absolute;
+      position: fixed;
       bottom: 0;
       left: 0;
       background: #222222;
@@ -182,9 +182,19 @@ var app = new function() {
     carYear = document.getElementById('add-year');
     // Get the value
 
-    var car = new Car(carName.value, carModel.value, carYear.value);
+    var car = new Car(carName.value, carModel.value, +carYear.value);
 
-    if (car) {
+    if (car.name.length == 0 || car.model.length == 0 || car.year.length == 0) {
+      alert ("Please enter car name, model and year");
+    } else if (car.year < 1800) {
+      alert ("Car Year should be 1800-2100");
+    } else if (car.year > 2100) {
+      alert ("Car Year should be 1800-2100");
+    } else if (isFinite(car.year) == false) {
+      alert ("Car Year should be a number");
+    } else if (car.name.length > 20 || car.model.length > 20) {
+      alert ("It's too long for a car name");
+    } else if (car) {
       // Add the new value
       this.cars.push(car);
       // Reset input value
