@@ -190,13 +190,13 @@ var app = new function() {
 
     if (car.name.length == 0 || car.model.length == 0 || car.year.length == 0) {
       alert ("Please enter car name, model and year");
-    } else if (car.year < 1800) {
-      alert ("Car Year should be 1800-2100");
-    } else if (car.year > 2100) {
-      alert ("Car Year should be 1800-2100");
+    } else if (car.year < 1850) {
+      alert ("Car Year should be 1850-2020");
+    } else if (car.year > 2020) {
+      alert ("Car Year should be 1850-2020");
     } else if (isFinite(car.year) == false) {
       alert ("Car Year should be a number");
-    } else if (car.name.length > 20 || car.model.length > 20) {
+    } else if (car.name.length > 35 || car.model.length > 35) {
       alert ("It's too long for a car name");
     } else if (car) {
       // Add the new value
@@ -226,7 +226,17 @@ var app = new function() {
       // Get value
       var car = new Car(editName.value, editModel.value, editYear.value);
 
-      if (car) {
+      if (car.name.length == 0 || car.model.length == 0 || car.year.length == 0) {
+      alert ("Please enter car name, model and year");
+    } else if (car.year < 1850) {
+      alert ("Car Year should be 1850-2020");
+    } else if (car.year > 2020) {
+      alert ("Car Year should be 1850-2020");
+    } else if (isFinite(car.year) == false) {
+      alert ("Car Year should be a number");
+    } else if (car.name.length > 35 || car.model.length > 35) {
+      alert ("It's too long for a car name");
+    } else if (car) {
         // Edit value
         self.cars.splice(item, 1, car);
         // Display the new list
