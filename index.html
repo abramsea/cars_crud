@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
   
    <title>Cars CRUD</title>
@@ -14,7 +15,7 @@
      }
 
      body {
-        background: url(bg.jpg) repeat-y;
+        background: url(bg.jpg) 0px -70px fixed no-repeat;
         background-size: 100%;
         color: #fff;
         text-align: center;
@@ -43,6 +44,7 @@
        margin: 10px;
        border: 2px solid #000;
        background: #999999;
+       box-shadow: 0 0 10px rgba(0,0,0,0.6);
      }
 
      .button {
@@ -50,6 +52,7 @@
        color: white;
        padding: 10px;
        border: 1px solid #000;
+       border-radius: 5px;
      }
 
      .green {
@@ -64,15 +67,18 @@
        width: 180px;
        height: 20px;
        padding: 5px;
+       box-shadow: 5px 5px 10px rgba(0,0,0,0.6);
      }
 
      #counter {
        padding: 10px;
+       font-size: 20px;
      }
 
 
     input[type='submit'], button, [aria-label]{
       cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.6);
     }
     #spoiler{
       display: none;
@@ -143,13 +149,20 @@ var app = new function() {
 
   this.el = document.getElementById('cars');
 
+
   this.cars = [{name: 'Lada', model: '2104', year: '1995'}, {name: 'Volkswagen', model: 'Passat', year: '1988'}, 
   {name: 'Skoda', model: 'Fabia', year: '2001'}, {name: 'Skoda', model: 'Fabia', year: '2009'},
   {name: 'Volkswagen', model: 'Golf GTI', year: '2011'}];
 
+/*
+
+  this.cars = [];
+
+*/ 
+
   this.Count = function(data) {
     var el   = document.getElementById('counter');
-    var name = 'cars';
+    var name = 'car';
 
     if (data) {
       if (data > 1) {
@@ -157,7 +170,7 @@ var app = new function() {
       }
       el.innerHTML = data + ' ' + name ;
     } else {
-      el.innerHTML = 'No ' + name;
+      el.innerHTML = 'No cars';
     }
   };
   
@@ -180,6 +193,23 @@ var app = new function() {
     return this.el.innerHTML = data;
   };
 
+  function validate( a, b, c, d ) {
+    let thisYear = new Date().getFullYear();
+    if (a == 0 || b == 0 || c == 0) {
+      alert ("Please enter car name, model and year");
+    } else if (d < 1850) {
+      alert ("Car Year should be from 1850 till now");
+    } else if (d > thisYear) {
+      alert ("Car Year should be from 1850 till now");
+    } else if (isFinite(d) == false) {
+      alert ("Car Year should be a number");
+    } else if (a > 35 || b > 35) {
+      alert ("It's too long for a car name");
+    } else { 
+      return true;
+    }
+  }
+
   this.Add = function () {
     carName = document.getElementById('add-name');
     carModel = document.getElementById('add-model');
@@ -188,17 +218,8 @@ var app = new function() {
 
     var car = new Car(carName.value, carModel.value, +carYear.value);
 
-    if (car.name.length == 0 || car.model.length == 0 || car.year.length == 0) {
-      alert ("Please enter car name, model and year");
-    } else if (car.year < 1850) {
-      alert ("Car Year should be 1850-2020");
-    } else if (car.year > 2020) {
-      alert ("Car Year should be 1850-2020");
-    } else if (isFinite(car.year) == false) {
-      alert ("Car Year should be a number");
-    } else if (car.name.length > 35 || car.model.length > 35) {
-      alert ("It's too long for a car name");
-    } else if (car) {
+
+    if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
       // Add the new value
       this.cars.push(car);
       // Reset input value
@@ -226,17 +247,7 @@ var app = new function() {
       // Get value
       var car = new Car(editName.value, editModel.value, editYear.value);
 
-      if (car.name.length == 0 || car.model.length == 0 || car.year.length == 0) {
-      alert ("Please enter car name, model and year");
-    } else if (car.year < 1850) {
-      alert ("Car Year should be 1850-2020");
-    } else if (car.year > 2020) {
-      alert ("Car Year should be 1850-2020");
-    } else if (isFinite(car.year) == false) {
-      alert ("Car Year should be a number");
-    } else if (car.name.length > 35 || car.model.length > 35) {
-      alert ("It's too long for a car name");
-    } else if (car) {
+      if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
         // Edit value
         self.cars.splice(item, 1, car);
         // Display the new list
@@ -261,6 +272,31 @@ app.FetchAll();
 function CloseInput() {
   document.getElementById('spoiler').style.display = 'none';
 }
+</script>
+
+<!--
+
+<script>
+
+const apiUrl = 'https://api.badsoft.tk/bullshit';
+
+axios.get(apiUrl, { params: { size: 100, page: 0 } })
+  .then(function (response) {
+    app.cars = response.data.content;
+    app.FetchAll();
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .then(function () {
+  });
+
+-->
+
+
+
+
+
 </script>
 </body>
 </html>
