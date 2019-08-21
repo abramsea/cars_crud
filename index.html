@@ -15,7 +15,7 @@
      }
 
      body {
-        background: url(bg.jpg) 0px -70px fixed no-repeat;
+        background: url(bg.jpg) 0px -70px fixed repeat-y;
         background-size: 100%;
         color: #fff;
         text-align: center;
@@ -82,6 +82,7 @@
     }
     #spoiler{
       display: none;
+      margin-top: 10px;
     }
 
     .footer {
@@ -102,15 +103,15 @@
   <main>
      <div class="container">
 
-       <form action="javascript:void(0);" method="POST" onsubmit="app.Add()"> 
+      <form action="javascript:void(0);" method="POST" onsubmit="postCar()">
          <input type="text" id="add-name" placeholder="New car name">
          <input type="text" id="add-model" placeholder="New car model">
          <input type="text" id="add-year" placeholder="New car year">
          <input class="button green" type="submit" value="Add">
-       </form>
+        </form>
 
        <div id="spoiler" role="aria-hidden">
-         <form action="javascript:void(0);" method="POST" id="saveEdit">
+         <form action="javascript:void(0);" method="POST" onsubmit="putCar()">
            <input type="text" id="edit-name">
            <input type="text" id="edit-model">
            <input type="text" id="edit-year">
@@ -138,62 +139,9 @@
 
 <script>
 
+getCars();
 
-var app = new function() {
-
-  function Car(name, model, year) {
-      this.name = name;
-      this.model = model;
-      this.year = year;
-    }
-
-  this.el = document.getElementById('cars');
-
-
-  this.cars = [{name: 'Lada', model: '2104', year: '1995'}, {name: 'Volkswagen', model: 'Passat', year: '1988'}, 
-  {name: 'Skoda', model: 'Fabia', year: '2001'}, {name: 'Skoda', model: 'Fabia', year: '2009'},
-  {name: 'Volkswagen', model: 'Golf GTI', year: '2011'}];
-
-/*
-
-  this.cars = [];
-
-*/ 
-
-  this.Count = function(data) {
-    var el   = document.getElementById('counter');
-    var name = 'car';
-
-    if (data) {
-      if (data > 1) {
-        name = 'cars';
-      }
-      el.innerHTML = data + ' ' + name ;
-    } else {
-      el.innerHTML = 'No cars';
-    }
-  };
-  
-  this.FetchAll = function() {
-    var data = '';
-
-    if (this.cars.length > 0) {
-      for (i = 0; i < this.cars.length; i++) {
-        data += '<tr>';
-        data += '<td>' + this.cars[i].name + '</td>';
-        data += '<td>' + this.cars[i].model + '</td>';
-        data += '<td>' + this.cars[i].year + '</td>';
-        data += '<td><button class="button" onclick="app.Edit(' + i + ')">Edit</button></td>';
-        data += '<td><button class="button red" onclick="app.Delete(' + i + ')">Delete</button></td>';
-        data += '</tr>';
-      }
-    }
-
-    this.Count(this.cars.length);
-    return this.el.innerHTML = data;
-  };
-
-  function validate( a, b, c, d ) {
+function validate( a, b, c, d ) {
     let thisYear = new Date().getFullYear();
     if (a == 0 || b == 0 || c == 0) {
       alert ("Please enter car name, model and year");
@@ -210,93 +158,169 @@ var app = new function() {
     }
   }
 
-  this.Add = function () {
-    carName = document.getElementById('add-name');
-    carModel = document.getElementById('add-model');
-    carYear = document.getElementById('add-year');
-    // Get the value
-
-    var car = new Car(carName.value, carModel.value, +carYear.value);
-
-
-    if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
-      // Add the new value
-      this.cars.push(car);
-      // Reset input value
-      carName.value = '';
-      carModel.value = '';
-      carYear.value = '';
-      // Dislay the new list
-      this.FetchAll();
-    }
-  };
-
-  this.Edit = function (item) {
-    var editName = document.getElementById('edit-name');
-    var editModel = document.getElementById('edit-model');
-    var editYear = document.getElementById('edit-year');
-    // Display value in the field
-    editName.value = this.cars[item].name;
-    editModel.value = this.cars[item].model;
-    editYear.value = this.cars[item].year;
-    // Display fields
-    document.getElementById('spoiler').style.display = 'block';
-    self = this;
-
-    document.getElementById('saveEdit').onsubmit = function() {
-      // Get value
-      var car = new Car(editName.value, editModel.value, editYear.value);
-
-      if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
-        // Edit value
-        self.cars.splice(item, 1, car);
-        // Display the new list
-        self.FetchAll();
-        // Hide fields
-        CloseInput();
-      }
-    }
-  };
-
-  this.Delete = function (item) {
-    // Delete the current row
-    this.cars.splice(item, 1);
-    // Display the new list
-    this.FetchAll();
-  };
-  
+function Car(name, model, year) {
+  this.name = name;
+  this.model = model;
+  this.year = year;
 }
 
-app.FetchAll();
+
+var app = new function() {
+
+  this.el = document.getElementById('cars');
+
+  this.cars = [];
+
+  this.Count = function(data) {
+    var el   = document.getElementById('counter');
+    var name = 'car';
+
+    if (data) {
+      if (data > 1) {
+        name = 'cars';
+      }
+      el.innerHTML = data + ' ' + name ;
+    } else {
+      el.innerHTML = 'No cars';
+    }
+  };
+
+  var selectedCar;
+  
+  this.FetchAll = function() {
+    var data = '';
+
+    if (this.cars.length > 0) {
+      for (i = 0; i < this.cars.length; i++) {
+        data += '<tr>';
+        data += '<td>' + this.cars[i].name + '</td>';
+        data += '<td>' + this.cars[i].model + '</td>';
+        data += '<td>' + this.cars[i].year + '</td>';
+        data += '<td><button class="button" onclick="editCar('+i+')">Edit</button></td>';
+        data += '<td><button class="button red" onclick="delCar('+this.cars[i].id+')">Delete</button></td>';
+        data += '</tr>';
+      }
+    }
+
+
+    this.Count(this.cars.length);
+    return this.el.innerHTML = data;
+  };
+
+
+
+}
 
 function CloseInput() {
   document.getElementById('spoiler').style.display = 'none';
 }
-</script>
 
-<!--
 
-<script>
-
-const apiUrl = 'https://api.badsoft.tk/bullshit';
-
-axios.get(apiUrl, { params: { size: 100, page: 0 } })
-  .then(function (response) {
-    app.cars = response.data.content;
+function getCars () {
+  const apiUrl = 'https://api.badsoft.tk/bullshit';
+  axios.get(apiUrl, { params: { size: 100, page: 0 } })
+    .then(function (response) {
+     app.cars = response.data.content;
     app.FetchAll();
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
-  .then(function () {
-  });
+    })
+     .catch(function (error) {
+       console.log(error);
+     })
+     .then(function () {
+     });
 
--->
+}
+
+  
+function postCar() {
+  const apiUrl = 'https://api.badsoft.tk/bullshit';
+  var carName = document.getElementById('add-name');
+  var carModel = document.getElementById('add-model');
+  var carYear = document.getElementById('add-year');
+
+  var car = new Car(carName.value, carModel.value, +carYear.value);
+
+  if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
+    axios.post(apiUrl, car)
+     .then(function (response) {
+      getCars();
+      })
+    .catch(function (error) {
+      console.log(error);
+    })
+      // Reset input value
+    carName.value = '';
+    carModel.value = '';
+    carYear.value = '';
+    // Dislay the new list
+  }
+}
+
+
+
+function editCar (item) {
+  var editName = document.getElementById('edit-name');
+  var editModel = document.getElementById('edit-model');
+  var editYear = document.getElementById('edit-year');
+  // Display value in the field
+  editName.value = app.cars[item].name;
+  editModel.value = app.cars[item].model;
+  editYear.value = app.cars[item].year;
+  app.selectedCar = app.cars[item];
+  // Display fields
+  document.getElementById('spoiler').style.display = 'block';
+}
+ 
+  
+function putCar () {
+      // Get value
+      var editName = document.getElementById('edit-name');
+      var editModel = document.getElementById('edit-model');
+      var editYear = document.getElementById('edit-year');
+      var carId = app.selectedCar.id;
+      var car = new Car(editName.value, editModel.value, editYear.value);
+      const apiUrl = 'https://api.badsoft.tk/bullshit/';
+ 
+      if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
+        // Edit value
+        axios.put(apiUrl + carId, car)
+          .then(function (response) {
+            getCars();
+           // Hide fields
+           CloseInput();
+           })
+          .catch(function (error) {
+            console.log(error);
+           })
+       
+       }
+}
+
+
+
+function delCar (carId) {
+  const apiUrl = 'https://api.badsoft.tk/bullshit/';
+  axios.delete(apiUrl + carId)
+    .then(function (response) {
+      getCars();
+      })
+    .catch(function (error) {
+      console.log(error);
+    })
+}
+
+
+ 
+
+
+
 
 
 
 
 
 </script>
+
+
 </body>
 </html>
