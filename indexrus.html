@@ -18,15 +18,15 @@
 
      <div class="container">
 
-      <input type="submit" class="button green" onclick="showModal('modal-add')" value="Add a car">
+      <input type="submit" class="button green" onclick="showModal('modal-add')" value="Добавить авто">
 
        <p id="counter"></p>
 
        <table class="table">
          <tr>
-           <th>Name</th>
-           <th>Model</th>
-           <th>Year</th>
+           <th>Марка</th>
+           <th>Модель</th>
+           <th>Год</th>
          </tr>
          <tbody id="cars">
          </tbody>
@@ -37,15 +37,15 @@
      <div class="modal-banner">
         <div class="modal-header">
           <a class="close" onclick="hideModal('modal-add')" aria-label="Close">&#10006;</a>
-          <h2 class="modal-caption">Add a car</h2>
+          <h2 class="modal-caption">Добавить авто</h2>
         </div>
         <div class="modal-body">
            <form action="javascript:void(0);" method="POST" onsubmit="postCar()">
-              <input type="text" id="add-name" placeholder="New car name">
-              <input type="text" id="add-model" placeholder="New car model">
-              <input type="text" id="add-year" placeholder="New car year">
+              <input type="text" id="add-name" placeholder="Марка">
+              <input type="text" id="add-model" placeholder="Модель">
+              <input type="text" id="add-year" placeholder="Год выпуска">
               <div class="modal-footer">
-                <input class="button green" type="submit" value="Add">
+                <input class="button green" type="submit" value="Добавить">
               </div>
           </form>
         </div>
@@ -56,7 +56,7 @@
       <div class="modal-banner">
          <div class="modal-header">
            <a class="close" onclick="hideModal('modal-edit')" aria-label="Close">&#10006;</a>
-           <h2 class="modal-caption">Edit this car</h2>
+           <h2 class="modal-caption">Изменить авто</h2>
          </div>
          <div class="modal-body">
             <form action="javascript:void(0);" method="POST" onsubmit="putCar()">
@@ -64,7 +64,7 @@
               <input type="text" id="edit-model">
               <input type="text" id="edit-year">
               <div class="modal-footer">
-                <input class="button" type="submit" value="Save">
+                <input class="button" type="submit" value="Сохранить">
               </div>
            </form>
          </div>
@@ -75,13 +75,13 @@
         <div class="modal-banner">
            <div class="modal-header">
              <a class="close" onclick="hideModal('modal-delete')" aria-label="Close">&#10006;</a>
-             <h2 class="modal-caption">Delete this car?</h2>
+             <h2 class="modal-caption">Удалить авто?</h2>
            </div>
            <div class="modal-body">
                 <p id="carToDelete"></p>
                 <div class="modal-footer">
-                  <input class="button red" type="submit" value="No" onclick="hideModal('modal-delete')">
-                  <input class="button green" type="submit" value="Yes" id="btn-yes">
+                  <input class="button red" type="submit" value="Нет" onclick="hideModal('modal-delete')">
+                  <input class="button green" type="submit" value="Да" id="btn-yes">
             </div>
            </div>
          </div>
@@ -91,10 +91,10 @@
         <div class="modal-banner">
            <div class="modal-header">
              <a class="close" onclick="hideModal('modal-alert-enter')" aria-label="Close">&#10006;</a>
-             <h2 class="modal-caption">Error!</h2>
+             <h2 class="modal-caption">Ошибка!</h2>
            </div>
            <div class="modal-body">
-              <p>Please enter car name, model and year</p>
+              <p>Пожалуйста, введите марку, модель и год</p>
            </div>
            <div class="modal-footer">
                 <input class="button" type="submit" value="OK" onclick="hideModal('modal-alert-enter')">
@@ -106,10 +106,10 @@
         <div class="modal-banner">
            <div class="modal-header">
              <a class="close" onclick="hideModal('modal-alert-wrongYear')" aria-label="Close">&#10006;</a>
-             <h2 class="modal-caption">Error!</h2>
+             <h2 class="modal-caption">Ошибка!</h2>
            </div>
            <div class="modal-body">
-              <p>Car Year should be from 1850 till now</p>
+              <p>Год выпуска должен быть от 1850 до нынешнего</p>
             </div>
             <div class="modal-footer">
                  <input class="button" type="submit" value="OK" onclick="hideModal('modal-alert-wrongYear')">
@@ -121,10 +121,10 @@
         <div class="modal-banner">
            <div class="modal-header">
              <a class="close" onclick="hideModal('modal-alert-NaN')" aria-label="Close">&#10006;</a>
-             <h2 class="modal-caption">Error!</h2>
+             <h2 class="modal-caption">Ошибка!</h2>
            </div>
            <div class="modal-body">
-              <p>Car year should be a number!</p>
+              <p>Год выпуска должен быть числом!</p>
             </div>
             <div class="modal-footer">
                  <input class="button" type="submit" value="OK" onclick="hideModal('modal-alert-NaN')">
@@ -136,10 +136,10 @@
         <div class="modal-banner">
            <div class="modal-header">
              <a class="close" onclick="hideModal('modal-alert-long')" aria-label="Close">&#10006;</a>
-             <h2 class="modal-caption">Error!</h2>
+             <h2 class="modal-caption">Ошибка!</h2>
            </div>
            <div class="modal-body">
-              <p>It's too long for a car name</p>
+              <p>Слишком длинное название</p>
             </div>
             <div class="modal-footer">
                  <input class="button" type="submit" value="OK" onclick="hideModal('modal-alert-long')">
@@ -150,7 +150,7 @@
       
    
    <footer class="footer">
-     <p>2019. made by Evgenii Abramson</p>
+     <p>2019. сделал Евгений Абрамсон</p>
    </footer>
 
 <script>
@@ -198,15 +198,15 @@ var app = new function() {
 
   this.count = function(data) {
     var el   = document.getElementById('counter');
-    var name = 'car';
+    var name = 'автомобиль';
 
     if (data) {
       if (data > 1) {
-        name = 'cars';
+        name = 'автомобилей';
       }
       el.innerHTML = data + ' ' + name ;
     } else {
-      el.innerHTML = 'No cars';
+      el.innerHTML = 'Нет автомобилей';
     }
   };
 
@@ -221,8 +221,8 @@ var app = new function() {
         data += '<td>' + this.cars[i].name + '</td>';
         data += '<td>' + this.cars[i].model + '</td>';
         data += '<td>' + this.cars[i].year + '</td>';
-        data += '<td><button class="button" onclick="editCar('+i+')">Edit</button></td>';
-        data += '<td><button class="button red" onclick="delCar('+i+')">Delete</button></td>';
+        data += '<td><button class="button" onclick="editCar('+i+')">Изменить</button></td>';
+        data += '<td><button class="button red" onclick="delCar('+i+')">Удалить</button></td>';
         data += '</tr>';
       }
     }
