@@ -222,7 +222,7 @@ var app = new function() {
         data += '<td>' + this.cars[i].model + '</td>';
         data += '<td>' + this.cars[i].year + '</td>';
         data += '<td><button class="button" onclick="editCar('+i+')">Edit</button></td>';
-        data += '<td><button class="button red" onclick="delCar('+i+')">Delete</button></td>';
+        data += '<td><button class="button red short" onclick="delCar('+i+')">&#10006;</button></td>';
         data += '</tr>';
       }
     }
@@ -244,8 +244,8 @@ function getCars (pageNumber) {
      app.pageNumber = response.data.pageable.pageNumber;
      app.totalPages = response.data.totalPages;
      app.totalCars = response.data.totalElements;
-    app.fetchAll();
-    pagination();
+     app.fetchAll();
+     pagination();
     })
      .catch(function (error) {
        console.log(error);
