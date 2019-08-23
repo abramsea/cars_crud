@@ -33,6 +33,8 @@
        </table>
    </div>
 
+   <div id="pagesRow"></div>
+
    <div class="modal-content" id="modal-add">
      <div class="modal-banner">
         <div class="modal-header">
@@ -155,7 +157,7 @@
 
 <script>
 
-getCars();
+getCars(0);
 
 function showModal (element) {
   document.getElementById(element).style.display = "block";
@@ -198,19 +200,22 @@ var app = new function() {
 
   this.count = function(data) {
     var el   = document.getElementById('counter');
-    var name = 'автомобиль';
+    var name = 'car';
 
     if (data) {
       if (data > 1) {
-        name = 'автомобилей';
+        name = 'cars';
       }
       el.innerHTML = data + ' ' + name ;
     } else {
-      el.innerHTML = 'Нет автомобилей';
+      el.innerHTML = 'No cars';
     }
   };
 
   var selectedCar;
+  var pageable;
+  var totalPages;
+  var pageNumber;
   
   this.fetchAll = function() {
     var data = '';
@@ -221,8 +226,8 @@ var app = new function() {
         data += '<td>' + this.cars[i].name + '</td>';
         data += '<td>' + this.cars[i].model + '</td>';
         data += '<td>' + this.cars[i].year + '</td>';
-        data += '<td><button class="button" onclick="editCar('+i+')">Изменить</button></td>';
-        data += '<td><button class="button red" onclick="delCar('+i+')">Удалить</button></td>';
+        data += '<td><button class="button" onclick="editCar('+i+')">Edit</button></td>';
+        data += '<td><button class="button red" onclick="delCar('+i+')">Delete</button></td>';
         data += '</tr>';
       }
     }
@@ -236,12 +241,15 @@ var app = new function() {
 
 }
 
-function getCars () {
+function getCars (pageNumber) {
   const apiUrl = 'https://api.badsoft.tk/bullshit';
-  axios.get(apiUrl, { params: { size: 100, page: 0 } })
+  axios.get(apiUrl, { params: { size: 20, page: pageNumber } })
     .then(function (response) {
      app.cars = response.data.content;
+     app.pageNumber = response.data.pageable.pageNumber;
+     app.totalPages = response.data.totalPages;
     app.fetchAll();
+    pagination();
     })
      .catch(function (error) {
        console.log(error);
@@ -249,6 +257,17 @@ function getCars () {
      .then(function () {
      });
 
+}
+
+function pagination () {
+  var el = document.getElementById('pagesRow')
+  var data = '';
+  if (app.totalPages > 0) {
+    for ( i = 0; i < app.totalPages; i++ ) {
+      data += '<input type="submit" class="button short" onclick="getCars('+i+')" value="'+(i+1)+'">';
+    }
+    return el.innerHTML = data;
+  }
 }
 
   
@@ -263,7 +282,7 @@ function postCar() {
   if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
     axios.post(apiUrl, car)
      .then(function (response) {
-      getCars();
+      getCars(0);
       hideModal('modal-add');
       })
     .catch(function (error) {
@@ -305,7 +324,7 @@ function putCar () {
         // Edit value
         axios.put(apiUrl + carId, car)
           .then(function (response) {
-            getCars();
+            getCars(0);
            // Hide fields
            hideModal('modal-edit');
            })
@@ -330,7 +349,7 @@ function delCar (item) {
     axios.delete(apiUrl + carId)
       .then(function (response) {
         hideModal('modal-delete');
-        getCars();
+        getCars(0);
         })
       .catch(function (error) {
        console.log(error);
@@ -344,8 +363,12 @@ function confirmDelete (car) {
 
   var el = document.getElementById('carToDelete');
   // Display a car to delete
-  var data =  car.name + ' ' + car.model + ' ' + car.year;
-  return el.innerHTML = data;
+  if (car.name.length < 36 || car.model.length < 36 ) {
+    var data =  car.name + ' ' + car.model + ' ' + car.year;
+  } else {
+    var data = '(too long to show this shit)';
+  }
+    return el.innerHTML = data;
 }
 
 
