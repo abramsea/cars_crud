@@ -10,12 +10,6 @@
  </head>
  <body>
 
-    <div class="flags">
-      <a href="index.html"><img class="flag" src="uk.png" alt="ENG"></a>
-      <a href="indexrus.html"><img class="flag" src="rus.png" alt="RUS"></a>
-    </div>
-
-
      <div class="container">
 
       <input type="submit" class="button green" onclick="showModal('modal-add')" value="Add a car">
@@ -206,7 +200,7 @@ var app = new function() {
       if (data > 1) {
         name = 'cars';
       }
-      el.innerHTML = data + ' ' + name ;
+      el.innerHTML = data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
     } else {
       el.innerHTML = 'No cars';
     }
@@ -216,6 +210,7 @@ var app = new function() {
   var pageable;
   var totalPages;
   var pageNumber;
+  var totalCars;
   
   this.fetchAll = function() {
     var data = '';
@@ -248,6 +243,7 @@ function getCars (pageNumber) {
      app.cars = response.data.content;
      app.pageNumber = response.data.pageable.pageNumber;
      app.totalPages = response.data.totalPages;
+     app.totalCars = response.data.totalElements;
     app.fetchAll();
     pagination();
     })
