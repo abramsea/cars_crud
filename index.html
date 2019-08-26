@@ -28,11 +28,12 @@
    </div>
    
    <div id="pages">
-    <input type="submit" class="button short" onclick="getCars(app.pageNumber-10)" value="&#60;&#60;">
+     <input type="submit" class="button short" onclick="getCars(0)" value="&#171;&#171;">
+    <input type="submit" class="button short" onclick="getCars(app.pageNumber-10)" value="&#171;">
     <input type="submit" class="button short" onclick="getCars(app.pageNumber-1)" value="&#60;">
       <div id="pagesRow"></div>
     <input type="submit" class="button short" onclick="getCars(app.pageNumber+1)" value="&#62;">
-    <input type="submit" class="button short" onclick="getCars(app.pageNumber+10)" value="&#62;&#62;">
+    <input type="submit" class="button short" onclick="getCars(app.pageNumber+10)" value="&#187;">
    </div>
 
    <div class="modal-content" id="modal-add">
