@@ -26,8 +26,14 @@
          </tbody>
        </table>
    </div>
-
-   <div id="pagesRow"></div>
+   
+   <div id="pages">
+    <input type="submit" class="button short" onclick="getCars(app.pageNumber-10)" value="&#60;&#60;">
+    <input type="submit" class="button short" onclick="getCars(app.pageNumber-1)" value="&#60;">
+      <div id="pagesRow"></div>
+    <input type="submit" class="button short" onclick="getCars(app.pageNumber+1)" value="&#62;">
+    <input type="submit" class="button short" onclick="getCars(app.pageNumber+10)" value="&#62;&#62;">
+   </div>
 
    <div class="modal-content" id="modal-add">
      <div class="modal-banner">
@@ -200,7 +206,7 @@ var app = new function() {
       if (data > 1) {
         name = 'cars';
       }
-      el.innerHTML = data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
+      el.innerHTML = 'this is ' + (app.pageNumber+1) + ' page. ' + data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
     } else {
       el.innerHTML = 'No cars';
     }
@@ -211,6 +217,7 @@ var app = new function() {
   var totalPages;
   var pageNumber;
   var totalCars;
+  var lastPage;
   
   this.fetchAll = function() {
     var data = '';
@@ -244,6 +251,7 @@ function getCars (pageNumber) {
      app.pageNumber = response.data.pageable.pageNumber;
      app.totalPages = response.data.totalPages;
      app.totalCars = response.data.totalElements;
+     app.lastPage = response.data.last;
      app.fetchAll();
      pagination();
     })
@@ -259,11 +267,11 @@ function pagination () {
   var el = document.getElementById('pagesRow')
   var data = '';
   if (app.totalPages > 0) {
-    for ( i = 0; i < app.totalPages; i++ ) {
+    for ( i = app.pageNumber; i < (app.pageNumber+10); i++ ) {
       data += '<input type="submit" class="button short" onclick="getCars('+i+')" value="'+(i+1)+'">';
-    }
-    return el.innerHTML = data;
+    } 
   }
+  return el.innerHTML = data;
 }
 
   
