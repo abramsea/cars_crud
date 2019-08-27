@@ -16,8 +16,6 @@
 
        <p id="counter"></p>
 
-
-       <!-- 
        <form name="selector" class="selector">
          <p>Cars on page:</p>
          <select name="howMany">
@@ -25,9 +23,9 @@
            <option value="20">20</option>
            <option value="50">50</option>
          </select>
-         <input class="button short" type="submit" value="show" onclick="maxOnPage()">
+         <input class="button short" type="submit" value="Show" onclick="maxOnPage()">
         </form>
-        -->
+
 
        <table class="table">
          <tr>
@@ -41,13 +39,14 @@
    </div>
    
    <div id="pages">
-     <input type="submit" class="button short" onclick="getCars(0)" value="&#171;&#171;">
-    <input type="submit" class="button short" onclick="getCars(app.pageNumber-10)" value="&#171;">
-    <input type="submit" class="button short" onclick="getCars(app.pageNumber-1)" value="&#60;">
-      <div id="pagesRow"></div>
-    <input type="submit" class="button short" onclick="getCars(app.pageNumber+1)" value="&#62;">
-    <input type="submit" class="button short" onclick="getCars(app.pageNumber+10)" value="&#187;">
+     <input id="firstPageButton" type="submit" class="button short" onclick="getCars(0)" value="&#171;">
+     <input id="pageBackButton" type="submit" class="button short" onclick="getCars(app.pageNumber-1)" value="&#60;">
+     <div id="pagesRow"></div>
+     <input id="pageForwardButton" type="submit" class="button short" onclick="getCars(app.pageNumber+1)" value="&#62;">
+     <input id="lastPageButton" type="submit" class="button short" onclick="getCars(app.totalPages-1)" value="&#187;">
    </div>
+
+   <input id='selectPage' class="button" type="submit" onclick="showModal('modal-select-page')" value="Select Page">
 
    <div class="modal-content" id="modal-add">
      <div class="modal-banner">
@@ -57,7 +56,7 @@
         </div>
         <div class="modal-body">
            <form action="javascript:void(0);" method="POST" onsubmit="postCar()">
-              <input type="text" id="add-name" placeholder="New car name">
+              <input autofocus type="text" id="add-name" placeholder="New car name">
               <input type="text" id="add-model" placeholder="New car model">
               <input type="text" id="add-year" placeholder="New car year">
               <div class="modal-footer">
@@ -76,7 +75,7 @@
          </div>
          <div class="modal-body">
             <form action="javascript:void(0);" method="POST" onsubmit="putCar()">
-              <input type="text" id="edit-name">
+              <input autofocus type="text" id="edit-name">
               <input type="text" id="edit-model">
               <input type="text" id="edit-year">
               <div class="modal-footer">
@@ -162,6 +161,37 @@
             </div>
           </div>
        </div>
+       
+      <div class="modal-content" id="modal-select-page">
+        <div class="modal-banner">
+           <div class="modal-header">
+             <a class="close" onclick="hideModal('modal-select-page')" aria-label="Close">&#10006;</a>
+             <h2 class="modal-caption">Enter page number</h2>
+           </div>
+           <div class="modal-body">
+            <form action="javascript:void(0);" method="POST" onsubmit="selectPage()">
+              <input autofocus type="text" id="selectedPage">
+              <div class="modal-footer">
+                <input class="button" type="submit" value="Go">
+              </div>
+           </form>
+          </div>
+       </div>
+
+       <div class="modal-content" id="modal-alert-nopage">
+        <div class="modal-banner">
+           <div class="modal-header">
+             <a class="close" onclick="hideModal('modal-alert-nopage')" aria-label="Close">&#10006;</a>
+             <h2 class="modal-caption">Error!</h2>
+           </div>
+           <div class="modal-body">
+              <p>This page doesn't exist</p>
+            </div>
+            <div class="modal-footer">
+                 <input class="button" type="submit" value="OK" onclick="hideModal('modal-alert-nopage')">
+            </div>
+          </div>
+       </div>
 
       
    
@@ -220,7 +250,7 @@ var app = new function() {
       if (data > 1) {
         name = 'cars';
       }
-      el.innerHTML = 'page: ' + (app.pageNumber+1) + '. ' + data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
+      el.innerHTML = 'page: ' + (app.pageNumber+1) + '/' + app.totalPages + '. ' + data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
     } else {
       el.innerHTML = 'No cars';
     }
@@ -256,24 +286,22 @@ var app = new function() {
 }
 
 
-/*
 var howMany = selector.howMany.options[0];
 
 function maxOnPage () {
 
   if ( howMany.value == 10 ) {
     carsOnPage = 10;
+    getCars(0);
   } else if ( howMany.value == 50 ) {
    carsOnPage = 50;
+   getCars(0);
   } else {
     carsOnPage = 20;
+    getCars(0);
   }
-  return carsOnPage;
-  getCars(0);
 
 }
-
-*/
 
 
 
@@ -303,12 +331,39 @@ function getCars (pageNumber) {
 function pagination () {
   var el = document.getElementById('pagesRow')
   var data = '';
-  if (app.totalPages > 0) {
-      for ( i = app.pageNumber; i < (app.pageNumber+10); i++ ) {
-      data += '<input type="submit" class="button short" onclick="getCars('+i+')" value="'+(i+1)+'">';
-   }
+  if (app.totalPages > 1) {
+      // for ( i = app.pageNumber; i < (app.pageNumber+10 ); i++ ) {
+     //  data += '<input type="submit" class="button short" onclick="getCars('+i+')" value="'+(i+1)+'">';
+     // if ((app.totalPages-1) == app.pageNumber) break;
+   // }
+   data += '<input type="submit" class="button short" onclick="getCars('+app.pageNumber+')" value="'+(app.pageNumber+1)+'">';
   }
+  if (app.firstPage == true) {
+     hideModal('firstPageButton');
+     hideModal('pageBackButton');
+   } else {
+     showModal('firstPageButton');
+     showModal('pageBackButton');
+   }
+   if (app.lastPage == true) {
+     hideModal('lastPageButton');
+     hideModal('pageForwardButton');
+   } else {
+     showModal('lastPageButton');
+     showModal('pageForwardButton');
+   }
   return el.innerHTML = data;
+}
+
+function selectPage () {
+  var selectedPage = document.getElementById('selectedPage');
+  if (selectedPage.value <= app.totalPages) {
+    getCars(+selectedPage.value-1);
+    selectedPage.value = '';
+    hideModal('modal-select-page');
+  } else {
+    showModal('modal-alert-nopage');
+  }
 }
 
   
