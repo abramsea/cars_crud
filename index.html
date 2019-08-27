@@ -16,14 +16,13 @@
 
        <p id="counter"></p>
 
-       <form name="selector" class="selector">
+       <form class="selector">
          <p>Cars on page:</p>
-         <select name="howMany">
+         <select onchange="maxOnPage(this.options[this.selectedIndex].value)">
            <option value="10">10</option>
            <option value="20">20</option>
            <option value="50">50</option>
          </select>
-         <input class="button short" type="submit" value="Show" onclick="maxOnPage()">
         </form>
 
 
@@ -263,6 +262,7 @@ var app = new function() {
   var totalCars;
   var lastPage;
   var firstPage;
+  var carsOnPage = 25;
 
   this.fetchAll = function() {
     var data = '';
@@ -286,21 +286,10 @@ var app = new function() {
 }
 
 
-var howMany = selector.howMany.options[0];
 
-function maxOnPage () {
-
-  if ( howMany.value == 10 ) {
-    carsOnPage = 10;
-    getCars(0);
-  } else if ( howMany.value == 50 ) {
-   carsOnPage = 50;
-   getCars(0);
-  } else {
-    carsOnPage = 20;
-    getCars(0);
-  }
-
+function maxOnPage (howMany) {
+  
+  getCars(0);
 }
 
 
@@ -308,8 +297,8 @@ function maxOnPage () {
 
 function getCars (pageNumber) {
   const apiUrl = 'https://api.badsoft.tk/bullshit';
-  var carsOnPage = 20;
-  axios.get(apiUrl, { params: { size: carsOnPage, page: pageNumber } })
+  var params = { size: 30, pages: pageNumber };
+  axios.get(apiUrl, { params: params })
     .then(function (response) {
      app.cars = response.data.content;
      app.pageNumber = response.data.pageable.pageNumber;
