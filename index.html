@@ -16,6 +16,19 @@
 
        <p id="counter"></p>
 
+
+       <!-- 
+       <form name="selector" class="selector">
+         <p>Cars on page:</p>
+         <select name="howMany">
+           <option value="10">10</option>
+           <option value="20">20</option>
+           <option value="50">50</option>
+         </select>
+         <input class="button short" type="submit" value="show" onclick="maxOnPage()">
+        </form>
+        -->
+
        <table class="table">
          <tr>
            <th>Name</th>
@@ -207,7 +220,7 @@ var app = new function() {
       if (data > 1) {
         name = 'cars';
       }
-      el.innerHTML = 'this is ' + (app.pageNumber+1) + ' page. ' + data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
+      el.innerHTML = 'page: ' + (app.pageNumber+1) + '. ' + data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
     } else {
       el.innerHTML = 'No cars';
     }
@@ -219,7 +232,8 @@ var app = new function() {
   var pageNumber;
   var totalCars;
   var lastPage;
-  
+  var firstPage;
+
   this.fetchAll = function() {
     var data = '';
 
@@ -239,20 +253,42 @@ var app = new function() {
     this.count(this.cars.length);
     return this.el.innerHTML = data;
   };
+}
 
 
+/*
+var howMany = selector.howMany.options[0];
+
+function maxOnPage () {
+
+  if ( howMany.value == 10 ) {
+    carsOnPage = 10;
+  } else if ( howMany.value == 50 ) {
+   carsOnPage = 50;
+  } else {
+    carsOnPage = 20;
+  }
+  return carsOnPage;
+  getCars(0);
 
 }
 
+*/
+
+
+
+
 function getCars (pageNumber) {
   const apiUrl = 'https://api.badsoft.tk/bullshit';
-  axios.get(apiUrl, { params: { size: 20, page: pageNumber } })
+  var carsOnPage = 20;
+  axios.get(apiUrl, { params: { size: carsOnPage, page: pageNumber } })
     .then(function (response) {
      app.cars = response.data.content;
      app.pageNumber = response.data.pageable.pageNumber;
      app.totalPages = response.data.totalPages;
      app.totalCars = response.data.totalElements;
      app.lastPage = response.data.last;
+     app.firstPage = response.data.first;
      app.fetchAll();
      pagination();
     })
@@ -268,9 +304,9 @@ function pagination () {
   var el = document.getElementById('pagesRow')
   var data = '';
   if (app.totalPages > 0) {
-    for ( i = app.pageNumber; i < (app.pageNumber+10); i++ ) {
+      for ( i = app.pageNumber; i < (app.pageNumber+10); i++ ) {
       data += '<input type="submit" class="button short" onclick="getCars('+i+')" value="'+(i+1)+'">';
-    } 
+   }
   }
   return el.innerHTML = data;
 }
