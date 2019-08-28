@@ -272,8 +272,8 @@ var app = new function() {
         data += '<td>' + this.cars[i].name + '</td>';
         data += '<td>' + this.cars[i].model + '</td>';
         data += '<td>' + this.cars[i].year + '</td>';
-        data += '<td><button class="button short" onclick="editCar('+i+')">&#9998;</button></td>';
-        data += '<td><button class="button red short" onclick="delCar('+i+')">&#10006;</button></td>';
+        data += '<td><button class="button short" onclick="backEnd.editCar('+i+')">&#9998;</button></td>';
+        data += '<td><button class="button red short" onclick="backEnd.delCar('+i+')">&#10006;</button></td>';
         data += '</tr>';
       }
     }
@@ -289,10 +289,10 @@ var app = new function() {
 var backEnd = new function() {
 
   this.pageSize = 20;
+  this.apiUrl = 'https://api.badsoft.tk/bullshit';
 
    this.getCars = function (pageNumber) {
-    const apiUrl = 'https://api.badsoft.tk/bullshit';
-    axios.get(apiUrl, { params: { size: backEnd.pageSize, page: pageNumber } })
+    axios.get(backEnd.apiUrl, { params: { size: backEnd.pageSize, page: pageNumber } })
       .then(function (response) {
       app.cars = response.data.content;
       app.pageNumber = response.data.pageable.pageNumber;
@@ -347,13 +347,12 @@ var backEnd = new function() {
 
   
    this.maxOnPage = function (howMany) {
-   this.pageSize = howMany;
-   this.getCars(0);  
+      this.pageSize = howMany;
+      this.getCars(0);  
   }
 
   
   this.postCar = function () {
-   const apiUrl = 'https://api.badsoft.tk/bullshit';
    var carName = document.getElementById('add-name');
    var carModel = document.getElementById('add-model');
    var carYear = document.getElementById('add-year');
@@ -361,9 +360,9 @@ var backEnd = new function() {
     var car = new Car(carName.value, carModel.value, +carYear.value);
 
     if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
-     axios.post(apiUrl, car)
+     axios.post(backEnd.apiUrl, car)
       .then(function (response) {
-        this.getCars(0);
+        backEnd.getCars(0);
         hideModal('modal-add');
        })
      .catch(function (error) {
@@ -399,13 +398,12 @@ var backEnd = new function() {
        var editYear = document.getElementById('edit-year');
        var carId = app.selectedCar.id;
        var car = new Car(editName.value, editModel.value, editYear.value);
-       const apiUrl = 'https://api.badsoft.tk/bullshit/';
     
         if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
          // Edit value
-         axios.put(apiUrl + carId, car)
+         axios.put(backEnd.apiUrl + "/" + carId, car)
            .then(function (response) {
-            this.getCars(0);
+            backEnd.getCars(0);
             // Hide fields
             hideModal('modal-edit');
             })
@@ -424,13 +422,12 @@ var backEnd = new function() {
     var btn = document.getElementById('btn-yes');
 
     btn.onclick = function () {
-      const apiUrl = 'https://api.badsoft.tk/bullshit/';
      app.selectedCar = app.cars[item];
      carId = app.selectedCar.id;
-     axios.delete(apiUrl + carId)
+     axios.delete(backEnd.apiUrl + "/" + carId)
         .then(function (response) {
           hideModal('modal-delete');
-          this.getCars(0);
+          backEnd.getCars(0);
           })
         .catch(function (error) {
         console.log(error);
