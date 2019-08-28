@@ -379,7 +379,7 @@ var backEnd = new function() {
     if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
      axios.post(backEnd.apiUrl, car)
       .then(function (response) {
-        backEnd.getCars(0);
+        backEnd.getCars(backEnd.totalPages-1);
         hideModal('modal-add');
        })
      .catch(function (error) {
@@ -420,7 +420,7 @@ var backEnd = new function() {
          // Edit value
          axios.put(backEnd.apiUrl + "/" + carId, car)
            .then(function (response) {
-            backEnd.getCars(0);
+            backEnd.getCars(backEnd.pageNumber);
             // Hide fields
             hideModal('modal-edit');
             })
@@ -444,7 +444,7 @@ var backEnd = new function() {
      axios.delete(backEnd.apiUrl + "/" + carId)
         .then(function (response) {
           hideModal('modal-delete');
-          backEnd.getCars(0);
+          backEnd.getCars(backEnd.pageNumber);
           })
         .catch(function (error) {
         console.log(error);
