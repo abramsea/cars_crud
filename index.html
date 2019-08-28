@@ -18,10 +18,11 @@
 
        <form class="selector">
          <p>Cars on page:</p>
-         <select onchange="maxOnPage(this.options[this.selectedIndex].value)">
+         <select onchange="backEnd.maxOnPage(this.options[this.selectedIndex].value)">
            <option value="10">10</option>
            <option value="20">20</option>
            <option value="50">50</option>
+           <option value="100">100</option>
          </select>
         </form>
 
@@ -38,11 +39,11 @@
    </div>
    
    <div id="pages">
-     <input id="firstPageButton" type="submit" class="button short" onclick="getCars(0)" value="&#171;">
-     <input id="pageBackButton" type="submit" class="button short" onclick="getCars(app.pageNumber-1)" value="&#60;">
+     <input id="firstPageButton" type="submit" class="button short" onclick="backEnd.getCars(0)" value="&#171;">
+     <input id="pageBackButton" type="submit" class="button short" onclick="backEnd.getCars(app.pageNumber-1)" value="&#60;">
      <div id="pagesRow"></div>
-     <input id="pageForwardButton" type="submit" class="button short" onclick="getCars(app.pageNumber+1)" value="&#62;">
-     <input id="lastPageButton" type="submit" class="button short" onclick="getCars(app.totalPages-1)" value="&#187;">
+     <input id="pageForwardButton" type="submit" class="button short" onclick="backEnd.getCars(app.pageNumber+1)" value="&#62;">
+     <input id="lastPageButton" type="submit" class="button short" onclick="backEnd.getCars(app.totalPages-1)" value="&#187;">
    </div>
 
    <input id='selectPage' class="button" type="submit" onclick="showModal('modal-select-page')" value="Select Page">
@@ -54,7 +55,7 @@
           <h2 class="modal-caption">Add a car</h2>
         </div>
         <div class="modal-body">
-           <form action="javascript:void(0);" method="POST" onsubmit="postCar()">
+           <form action="javascript:void(0);" method="POST" onsubmit="backEnd.postCar()">
               <input autofocus type="text" id="add-name" placeholder="New car name">
               <input type="text" id="add-model" placeholder="New car model">
               <input type="text" id="add-year" placeholder="New car year">
@@ -73,7 +74,7 @@
            <h2 class="modal-caption">Edit this car</h2>
          </div>
          <div class="modal-body">
-            <form action="javascript:void(0);" method="POST" onsubmit="putCar()">
+            <form action="javascript:void(0);" method="POST" onsubmit="backEnd.putCar()">
               <input autofocus type="text" id="edit-name">
               <input type="text" id="edit-model">
               <input type="text" id="edit-year">
@@ -168,7 +169,7 @@
              <h2 class="modal-caption">Enter page number</h2>
            </div>
            <div class="modal-body">
-            <form action="javascript:void(0);" method="POST" onsubmit="selectPage()">
+            <form action="javascript:void(0);" method="POST" onsubmit="backEnd.selectPage()">
               <input autofocus type="text" id="selectedPage">
               <div class="modal-footer">
                 <input class="button" type="submit" value="Go">
@@ -176,6 +177,7 @@
            </form>
           </div>
        </div>
+      </div>
 
        <div class="modal-content" id="modal-alert-nopage">
         <div class="modal-banner">
@@ -199,8 +201,6 @@
    </footer>
 
 <script>
-
-getCars(0);
 
 function showModal (element) {
   document.getElementById(element).style.display = "block";
@@ -262,7 +262,6 @@ var app = new function() {
   var totalCars;
   var lastPage;
   var firstPage;
-  var carsOnPage = 25;
 
   this.fetchAll = function() {
     var data = '';
@@ -287,175 +286,176 @@ var app = new function() {
 
 
 
-function maxOnPage (howMany) {
-  
-  getCars(0);
-}
+var backEnd = new function() {
 
+  this.pageSize = 24;
 
-
-
-function getCars (pageNumber) {
-  const apiUrl = 'https://api.badsoft.tk/bullshit';
-  var params = { size: 30, pages: pageNumber };
-  axios.get(apiUrl, { params: params })
-    .then(function (response) {
-     app.cars = response.data.content;
-     app.pageNumber = response.data.pageable.pageNumber;
-     app.totalPages = response.data.totalPages;
-     app.totalCars = response.data.totalElements;
-     app.lastPage = response.data.last;
-     app.firstPage = response.data.first;
-     app.fetchAll();
-     pagination();
-    })
-     .catch(function (error) {
-       console.log(error);
-     })
-     .then(function () {
-     });
-
-}
-
-function pagination () {
-  var el = document.getElementById('pagesRow')
-  var data = '';
-  if (app.totalPages > 1) {
-      // for ( i = app.pageNumber; i < (app.pageNumber+10 ); i++ ) {
-     //  data += '<input type="submit" class="button short" onclick="getCars('+i+')" value="'+(i+1)+'">';
-     // if ((app.totalPages-1) == app.pageNumber) break;
-   // }
-   data += '<input type="submit" class="button short" onclick="getCars('+app.pageNumber+')" value="'+(app.pageNumber+1)+'">';
-  }
-  if (app.firstPage == true) {
-     hideModal('firstPageButton');
-     hideModal('pageBackButton');
-   } else {
-     showModal('firstPageButton');
-     showModal('pageBackButton');
-   }
-   if (app.lastPage == true) {
-     hideModal('lastPageButton');
-     hideModal('pageForwardButton');
-   } else {
-     showModal('lastPageButton');
-     showModal('pageForwardButton');
-   }
-  return el.innerHTML = data;
-}
-
-function selectPage () {
-  var selectedPage = document.getElementById('selectedPage');
-  if (selectedPage.value <= app.totalPages) {
-    getCars(+selectedPage.value-1);
-    selectedPage.value = '';
-    hideModal('modal-select-page');
-  } else {
-    showModal('modal-alert-nopage');
-  }
-}
-
-  
-function postCar() {
-  const apiUrl = 'https://api.badsoft.tk/bullshit';
-  var carName = document.getElementById('add-name');
-  var carModel = document.getElementById('add-model');
-  var carYear = document.getElementById('add-year');
-
-  var car = new Car(carName.value, carModel.value, +carYear.value);
-
-  if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
-    axios.post(apiUrl, car)
-     .then(function (response) {
-      getCars(0);
-      hideModal('modal-add');
-      })
-    .catch(function (error) {
-      console.log(error);
-    })
-      // Reset input value
-    carName.value = '';
-    carModel.value = '';
-    carYear.value = '';
-    // Dislay the new list
-  }
-}
-
-
-function editCar (item) {
-  var editName = document.getElementById('edit-name');
-  var editModel = document.getElementById('edit-model');
-  var editYear = document.getElementById('edit-year');
-  // Display value in the field
-  editName.value = app.cars[item].name;
-  editModel.value = app.cars[item].model;
-  editYear.value = app.cars[item].year;
-  app.selectedCar = app.cars[item];
-  // Display fields
-  showModal('modal-edit');
-}
- 
-  
-function putCar () {
-      // Get value
-      var editName = document.getElementById('edit-name');
-      var editModel = document.getElementById('edit-model');
-      var editYear = document.getElementById('edit-year');
-      var carId = app.selectedCar.id;
-      var car = new Car(editName.value, editModel.value, editYear.value);
-      const apiUrl = 'https://api.badsoft.tk/bullshit/';
- 
-      if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
-        // Edit value
-        axios.put(apiUrl + carId, car)
-          .then(function (response) {
-            getCars(0);
-           // Hide fields
-           hideModal('modal-edit');
-           })
-          .catch(function (error) {
-            console.log(error);
-           })
-       
-       }
-}
-
-
-function delCar (item) {
-
-  confirmDelete(app.cars[item]);
-
-  var btn = document.getElementById('btn-yes');
-
-  btn.onclick = function () {
-    const apiUrl = 'https://api.badsoft.tk/bullshit/';
-    app.selectedCar = app.cars[item];
-    carId = app.selectedCar.id;
-    axios.delete(apiUrl + carId)
+   this.getCars = function (pageNumber) {
+    const apiUrl = 'https://api.badsoft.tk/bullshit';
+    axios.get(apiUrl, { params: { size: backEnd.pageSize, page: pageNumber } })
       .then(function (response) {
-        hideModal('modal-delete');
-        getCars(0);
-        })
-      .catch(function (error) {
-       console.log(error);
+      app.cars = response.data.content;
+      app.pageNumber = response.data.pageable.pageNumber;
+      app.totalPages = response.data.totalPages;
+      app.totalCars = response.data.totalElements;
+      app.lastPage = response.data.last;
+      app.firstPage = response.data.first;
+      app.fetchAll();
+      backEnd.pagination();
       })
+      .catch(function (error) {
+        console.log(error);
+      })
+      .then(function () {
+      });
+
   }
-}
 
-function confirmDelete (car) {
-
-  showModal ('modal-delete');
-
-  var el = document.getElementById('carToDelete');
-  // Display a car to delete
-  if (car.name.length < 36 || car.model.length < 36 ) {
-    var data =  car.name + ' ' + car.model + ' ' + car.year;
-  } else {
-    var data = '(too long to show this shit)';
-  }
+  this.pagination = function () {
+    var el = document.getElementById('pagesRow')
+    var data = '';
+    if (app.totalPages > 1) {
+     data += '<input type="submit" class="button short" onclick="getCars('+app.pageNumber+')" value="'+(app.pageNumber+1)+'">';
+   }
+    if (app.firstPage == true) {
+       hideModal('firstPageButton');
+       hideModal('pageBackButton');
+    } else {
+      showModal('firstPageButton');
+      showModal('pageBackButton');
+    }
+    if (app.lastPage == true) {
+      hideModal('lastPageButton');
+      hideModal('pageForwardButton');
+    } else {
+      showModal('lastPageButton');
+      showModal('pageForwardButton');
+    }
     return el.innerHTML = data;
 }
 
+  this.selectPage = function () {
+    var selectedPage = document.getElementById('selectedPage');
+    if (selectedPage.value <= app.totalPages) {
+     this.getCars(+selectedPage.value-1);
+     selectedPage.value = '';
+     hideModal('modal-select-page');
+    } else {
+     showModal('modal-alert-nopage');
+   }  
+  }
+
+  
+   this.maxOnPage = function (howMany) {
+   this.pageSize = howMany;
+   this.getCars(0);  
+  }
+
+  
+  this.postCar = function () {
+   const apiUrl = 'https://api.badsoft.tk/bullshit';
+   var carName = document.getElementById('add-name');
+   var carModel = document.getElementById('add-model');
+   var carYear = document.getElementById('add-year');
+
+    var car = new Car(carName.value, carModel.value, +carYear.value);
+
+    if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
+     axios.post(apiUrl, car)
+      .then(function (response) {
+        this.getCars(0);
+        hideModal('modal-add');
+       })
+     .catch(function (error) {
+       console.log(error);
+     })
+        // Reset input value
+      carName.value = '';
+      carModel.value = '';
+      carYear.value = '';
+      // Dislay the new list
+   }
+  }
+
+
+  this.editCar = function (item) {
+    var editName = document.getElementById('edit-name');
+    var editModel = document.getElementById('edit-model');
+    var editYear = document.getElementById('edit-year');
+    // Display value in the field
+    editName.value = app.cars[item].name;
+    editModel.value = app.cars[item].model;
+    editYear.value = app.cars[item].year;
+    app.selectedCar = app.cars[item];
+    // Display fields
+    showModal('modal-edit');  
+  }
+ 
+  
+  this.putCar = function () {
+        // Get value
+       var editName = document.getElementById('edit-name');
+       var editModel = document.getElementById('edit-model');
+       var editYear = document.getElementById('edit-year');
+       var carId = app.selectedCar.id;
+       var car = new Car(editName.value, editModel.value, editYear.value);
+       const apiUrl = 'https://api.badsoft.tk/bullshit/';
+    
+        if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
+         // Edit value
+         axios.put(apiUrl + carId, car)
+           .then(function (response) {
+            this.getCars(0);
+            // Hide fields
+            hideModal('modal-edit');
+            })
+           .catch(function (error) {
+             console.log(error);
+            })
+            
+        } 
+  }
+
+
+  this.delCar = function (item) {
+
+    this.confirmDelete(app.cars[item]);
+
+    var btn = document.getElementById('btn-yes');
+
+    btn.onclick = function () {
+      const apiUrl = 'https://api.badsoft.tk/bullshit/';
+     app.selectedCar = app.cars[item];
+     carId = app.selectedCar.id;
+     axios.delete(apiUrl + carId)
+        .then(function (response) {
+          hideModal('modal-delete');
+          this.getCars(0);
+          })
+        .catch(function (error) {
+        console.log(error);
+       })
+   }  
+  }
+
+  this.confirmDelete = function (car) {
+
+    showModal ('modal-delete');
+
+    var el = document.getElementById('carToDelete');
+    // Display a car to delete
+    if (car.name.length < 35 || car.model.length < 35 ) {
+     var data =  car.name + ' ' + car.model + ' ' + car.year;
+    } else {
+      var data = '(too long to show this shit)';
+   }
+      return el.innerHTML = data;
+  }
+
+}
+
+
+backEnd.getCars(0);
 
 
  
