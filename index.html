@@ -40,10 +40,10 @@
    
    <div id="pages">
      <input id="firstPageButton" type="submit" class="button short" onclick="backEnd.getCars(0)" value="&#171;">
-     <input id="pageBackButton" type="submit" class="button short" onclick="backEnd.getCars(app.pageNumber-1)" value="&#60;">
+     <input id="pageBackButton" type="submit" class="button short" onclick="backEnd.getCars(backEnd.pageNumber-1)" value="&#60;">
      <div id="pagesRow"></div>
-     <input id="pageForwardButton" type="submit" class="button short" onclick="backEnd.getCars(app.pageNumber+1)" value="&#62;">
-     <input id="lastPageButton" type="submit" class="button short" onclick="backEnd.getCars(app.totalPages-1)" value="&#187;">
+     <input id="pageForwardButton" type="submit" class="button short" onclick="backEnd.getCars(backEnd.pageNumber+1)" value="&#62;">
+     <input id="lastPageButton" type="submit" class="button short" onclick="backEnd.getCars(backEnd.totalPages-1)" value="&#187;">
    </div>
 
    <input id='selectPage' class="button" type="submit" onclick="showModal('modal-select-page')" value="Select Page">
@@ -249,19 +249,11 @@ var app = new function() {
       if (data > 1) {
         name = 'cars';
       }
-      el.innerHTML = 'page: ' + (app.pageNumber+1) + '/' + app.totalPages + '. ' + data + ' ' + name + ' on this page, ' + app.totalCars + ' cars total' ;
+      el.innerHTML = 'page: ' + (backEnd.pageNumber+1) + '/' + backEnd.totalPages + '. ' + data + ' ' + name + ' on this page, ' + backEnd.totalCars + ' cars total' ;
     } else {
       el.innerHTML = 'No cars';
     }
   };
-
-  var selectedCar;
-  var pageable;
-  var totalPages;
-  var pageNumber;
-  var totalCars;
-  var lastPage;
-  var firstPage;
 
   this.fetchAll = function() {
     var data = '';
@@ -288,6 +280,13 @@ var app = new function() {
 
 var backEnd = new function() {
 
+  var selectedCar;
+  var totalPages;
+  var pageNumber;
+  var totalCars;
+  var lastPage;
+  var firstPage;
+
   this.pageSize = 20;
   this.apiUrl = 'https://api.badsoft.tk/bullshit';
 
@@ -295,11 +294,11 @@ var backEnd = new function() {
     axios.get(backEnd.apiUrl, { params: { size: backEnd.pageSize, page: pageNumber } })
       .then(function (response) {
       app.cars = response.data.content;
-      app.pageNumber = response.data.pageable.pageNumber;
-      app.totalPages = response.data.totalPages;
-      app.totalCars = response.data.totalElements;
-      app.lastPage = response.data.last;
-      app.firstPage = response.data.first;
+      backEnd.pageNumber = response.data.pageable.pageNumber;
+      backEnd.totalPages = response.data.totalPages;
+      backEnd.totalCars = response.data.totalElements;
+      backEnd.lastPage = response.data.last;
+      backEnd.firstPage = response.data.first;
       app.fetchAll();
       backEnd.pagination();
       })
@@ -314,17 +313,35 @@ var backEnd = new function() {
   this.pagination = function () {
     var el = document.getElementById('pagesRow')
     var data = '';
-    if (app.totalPages > 1) {
-     data += '<input type="submit" class="button short" onclick="getCars('+app.pageNumber+')" value="'+(app.pageNumber+1)+'">';
+    if (backEnd.totalPages > 1) {
+      if (backEnd.pageNumber == 0) {
+        // nothing to do here
+      } else if (backEnd.pageNumber == 1) {
+          data += '<input type="submit" class="button short" onclick="backEnd.getCars('+(backEnd.pageNumber-1)+')" value="'+(backEnd.pageNumber)+'">';
+      } else {
+          for (i = backEnd.pageNumber-2; i < backEnd.pageNumber; i++ ) {
+            data += '<input type="submit" class="button short" onclick="backEnd.getCars('+i+')" value="'+(i+1)+'">';
+        }
+      }
+      data += '<input type="submit" class="button short active" onclick="backEnd.getCars('+backEnd.pageNumber+')" value="'+(backEnd.pageNumber+1)+'">';
+      if (backEnd.pageNumber == (backEnd.totalPages-1)) {
+        // nothing to do here too
+      } else if (backEnd.pageNumber == backEnd.totalPages-2) {
+        data += '<input type="submit" class="button short" onclick="backEnd.getCars('+(backEnd.pageNumber+1)+')" value="'+(backEnd.pageNumber+2)+'">';
+      } else {
+        for (i = (backEnd.pageNumber+1); i < (backEnd.pageNumber+3); i++ ) {
+          data += '<input type="submit" class="button short" onclick="backEnd.getCars('+i+')" value="'+(i+1)+'">';
+        }
+      }
    }
-    if (app.firstPage == true) {
+    if (backEnd.firstPage == true) {
        hideModal('firstPageButton');
        hideModal('pageBackButton');
     } else {
       showModal('firstPageButton');
       showModal('pageBackButton');
     }
-    if (app.lastPage == true) {
+    if (backEnd.lastPage == true) {
       hideModal('lastPageButton');
       hideModal('pageForwardButton');
     } else {
@@ -336,7 +353,7 @@ var backEnd = new function() {
 
   this.selectPage = function () {
     var selectedPage = document.getElementById('selectedPage');
-    if (selectedPage.value <= app.totalPages) {
+    if (selectedPage.value <= backEnd.totalPages) {
      this.getCars(+selectedPage.value-1);
      selectedPage.value = '';
      hideModal('modal-select-page');
@@ -422,8 +439,8 @@ var backEnd = new function() {
     var btn = document.getElementById('btn-yes');
 
     btn.onclick = function () {
-     app.selectedCar = app.cars[item];
-     carId = app.selectedCar.id;
+      backEnd.selectedCar = app.cars[item];
+     carId = backEnd.selectedCar.id;
      axios.delete(backEnd.apiUrl + "/" + carId)
         .then(function (response) {
           hideModal('modal-delete');

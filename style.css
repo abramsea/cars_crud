@@ -75,6 +75,10 @@
       .short {
         min-width: 33px;
       }
+
+      .active {
+        background: #18aae7;
+      }
  
       input[type='text'] {
         width: 180px;
