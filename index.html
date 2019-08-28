@@ -441,7 +441,7 @@ var backEnd = new function() {
 
     var el = document.getElementById('carToDelete');
     // Display a car to delete
-    if (car.name.length < 35 || car.model.length < 35 ) {
+    if (car.name.length < 35 && car.model.length < 35 ) {
      var data =  car.name + ' ' + car.model + ' ' + car.year;
     } else {
       var data = '(too long to show this shit)';
