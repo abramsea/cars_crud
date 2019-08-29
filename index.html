@@ -374,6 +374,11 @@ var backEnd = new function() {
    var carModel = document.getElementById('add-model');
    var carYear = document.getElementById('add-year');
 
+    var encodedCarName = encodeURI(carName.value);
+    var encodedCarModel = encodeURI(carModel.value);
+    carName.value = decodeURI(encodedCarName);
+    carModel.value = decodeURI(encodedCarModel);
+
     var car = new Car(carName.value, carModel.value, +carYear.value);
 
     if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
@@ -414,6 +419,12 @@ var backEnd = new function() {
        var editModel = document.getElementById('edit-model');
        var editYear = document.getElementById('edit-year');
        var carId = app.selectedCar.id;
+
+       var encodedEditName = encodeURI(editName.value);
+       var encodedEditModel = encodeURI(editModel.value);
+       editName.value = decodeURI(encodedEditName);
+       editModel.value = decodeURI(encodedEditModel);
+
        var car = new Car(editName.value, editModel.value, editYear.value);
     
         if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
