@@ -42,7 +42,8 @@
         padding: 10px;
         margin: 10px;
         border: 2px solid #000;
-        background: #999999;
+        /* background: #999999; */
+        background: url(asphalt.jpg);
         box-shadow: 0 0 10px rgba(0,0,0,0.6);
         max-width: 250px;
         height: auto;
@@ -129,7 +130,8 @@
       animation-name: animate;
       animation-duration: 0.5s;
       margin: 150px auto;
-      background: #999999;
+      /* background: #999999; */
+      background: url(asphalt.jpg);
       height: 350px;
       width: 350px;
       border: 2px solid #000;
