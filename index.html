@@ -194,6 +194,8 @@
           </div>
        </div>
 
+       
+
       
    
    <footer class="footer">
@@ -211,20 +213,26 @@ function hideModal (element) {
 }
 
 
-function validate( a, b, c, d ) {
+function validate( a, b, c ) {
     let thisYear = new Date().getFullYear();
-    if (a == 0 || b == 0 || c == 0) {
-      showModal ('modal-alert-enter');
-    } else if (d < 1850) {
-      showModal ('modal-alert-wrongYear');
-    } else if (d > thisYear) {
-      showModal ('modal-alert-wrongYear');
-    } else if (isFinite(d) == false) {
-      showModal ('modal-alert-NaN');
-    } else if (a > 35 || b > 35) {
-      showModal ('modal-alert-long');
-    } else { 
-      return true;
+
+    if (/[{<>}]/.test(a) == true || /[{<>}]/.test(b) == true ) {
+      showModal('modal-alert-enter');
+    } else {
+
+      if (a.length == 0 || b.length == 0 || c.length == 0) {
+        showModal ('modal-alert-enter');
+      } else if (c < 1850) {
+        showModal ('modal-alert-wrongYear');
+      } else if (c > thisYear) {
+        showModal ('modal-alert-wrongYear');
+      } else if (isFinite(c) == false) {
+        showModal ('modal-alert-NaN');
+      } else if (a.length > 35 || b.length > 35) {
+        showModal ('modal-alert-long');
+      } else { 
+        return true;
+      }
     }
   }
 
@@ -374,14 +382,9 @@ var backEnd = new function() {
    var carModel = document.getElementById('add-model');
    var carYear = document.getElementById('add-year');
 
-    var encodedCarName = encodeURI(carName.value);
-    var encodedCarModel = encodeURI(carModel.value);
-    carName.value = decodeURI(encodedCarName);
-    carModel.value = decodeURI(encodedCarModel);
-
     var car = new Car(carName.value, carModel.value, +carYear.value);
 
-    if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
+    if ( validate(car.name, car.model, car.year) ) {
      axios.post(backEnd.apiUrl, car)
       .then(function (response) {
         backEnd.getCars(backEnd.totalPages-1);
@@ -427,7 +430,7 @@ var backEnd = new function() {
 
        var car = new Car(editName.value, editModel.value, editYear.value);
     
-        if ( validate(car.name.length, car.model.length, car.year.length, car.year) ) {
+        if ( validate(car.name, car.model, car.year) ) {
          // Edit value
          axios.put(backEnd.apiUrl + "/" + carId, car)
            .then(function (response) {
